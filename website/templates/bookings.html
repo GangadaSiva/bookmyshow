@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}user bookings{% endblock %}
+
+{% block content %}
+
+<div class="p-2">
+    <h2 class="text-success">Your Bookings</h2>
+
+  {% if bookings %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Movie Name</th>
+          <th>Theater Name</th>
+          <th>Screening Time</th>
+          <th>Seat</th>
+          
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+          <tr>
+            <td>{{ booking.movie.title }}</td>
+            <td>{{ booking.cinema.name }}</td>
+            <td>{{ booking.screening.start_time }}</td>
+            <td>{{ booking.seat.row }} - {{ booking.seat.seat_number }}</td>
+            
+            <td class="text-success">Booked</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>You have no bookings yet.</p>
+  {% endif %}
+</div>
+
+
+{% endblock %}

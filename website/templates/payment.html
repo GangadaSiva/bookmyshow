@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+
+{% block title %}Payment{% endblock %}
+
+
+{% block content %}
+
+<div class="container mt-1 p-3">
+    <div class="row">
+        <!-- Card 1 -->
+        <div class="col-lg-4 mb-3">
+            <div class="card p-3">
+                <div class="d-flex justify-content-center mb-3">
+                    <img src="https://www.freepnglogos.com/uploads/visa-logo-download-png-21.png" alt="Visa logo" class="img-fluid" style="width: 80px; height: 50px;">
+                </div>
+                <div class="number text-center">
+                    <label class="fw-bold">**** **** **** 1060</label>
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <small><span class="fw-bold">Expiry date:</span> 10/16</small>
+                    <small><span class="fw-bold">Name:</span>{{user.name}}</small>
+                </div>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-lg-4 mb-3">
+            <div class="card p-3">
+                <div class="d-flex justify-content-center mb-3">
+                    <img src="https://www.freepnglogos.com/uploads/mastercard-png/file-mastercard-logo-svg-wikimedia-commons-4.png" alt="Mastercard logo" class="img-fluid" style="width: 80px; height: 50px;">
+                </div>
+                <div class="number text-center">
+                    <label class="fw-bold">**** **** **** 1060</label>
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <small><span class="fw-bold">Expiry date:</span> 10/16</small>
+                    <small><span class="fw-bold">Name:</span>{{user.name}}</small>
+                </div>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-lg-4 mb-3">
+            <div class="card p-3">
+                <div class="d-flex justify-content-center mb-3">
+                    <img src="https://www.freepnglogos.com/uploads/discover-png-logo/credit-cards-discover-png-logo-4.png" alt="Discover logo" class="img-fluid" style="width: 80px; height: 50px;">
+                </div>
+                <div class="number text-center">
+                    <label class="fw-bold">**** **** **** 1060</label>
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <small><span class="fw-bold">Expiry date:</span> 10/16</small>
+                    <small><span class="fw-bold">Name:</span>{{user.name}}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Methods Section -->
+        <div class="col-12 mt-4">
+            <div class="card p-3">
+                <p class="mb-0 fw-bold h4">Payment Methods</p>
+            </div>
+        </div>
+
+        <!-- PayPal Payment Option -->
+        <div class="col-12">
+            <div class="card p-3">
+                <div class="card-body border p-0">
+                    <p>
+                        <a class="btn btn-primary w-100 d-flex align-items-center justify-content-between" data-bs-toggle="collapse" href="#paypalCollapse" role="button" aria-expanded="false" aria-controls="paypalCollapse">
+                            <span class="fw-bold">PayPal</span>
+                            <i class="fa fa-cc-paypal" aria-hidden="true"></i>
+                        </a>
+                    </p>
+                    <div class="collapse p-3 pt-0" id="paypalCollapse">
+                        <div class="row">
+                            <div class="col-8">
+                                <p class="h4 mb-0">Summary</p>
+                                <p><span class="fw-bold">Product:</span> Name of product</p>
+                                <p><span class="fw-bold">Price:</span> $452.90</p>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Credit Card Payment Option -->
+                <div class="card-body border p-0">
+                    <p>
+                        <a class="btn btn-primary w-100 d-flex align-items-center justify-content-between" data-bs-toggle="collapse" href="#creditCardCollapse" role="button" aria-expanded="true" aria-controls="creditCardCollapse">
+                            <span class="fw-bold">Credit Card</span>
+                            <span>
+                                <i class="fa fa-cc-amex" aria-hidden="true"></i>
+                                <i class="fa fa-cc-mastercard" aria-hidden="true"></i>
+                                <i class="fa fa-cc-discover" aria-hidden="true"></i>
+                        
+                            </span>
+                        </a>
+                    </p>
+                    <div class="collapse show p-3 pt-0" id="creditCardCollapse">
+                        <div class="row">
+                            <div class="col-lg-5 mb-3">
+                                <p class="h4 mb-0">Summary</p>
+                                <p class="fw-bold">{{string_calculation}}</p>
+                                <p><span class="fw-bold">Total Price: </span>{{total_price}}</p>
+                                
+                            </div>
+                            <div class="col-lg-7">
+                                <form action="{{ url_for('views.process_payment') }}" method="POST" enctype="multipart/form-data" class="form">
+                                    <input type="hidden" name="selected_seats" value="{{ selected_seats }}">
+                                    <input type="hidden" name="screening_id" value="{{ screening.id }}">
+                                    <input type="hidden" name="total_price" value="{{ total_price }}">
+                                    <div class="row">
+                                        <div class="form-group mb-4">
+                                            <label for="payment_method">Payment Method</label>
+                                            <select id="payment_method" name="payment_method" class="form-control" required>
+                                                <option value="Credit Card">Credit Card</option>
+                                                <option value="Debit Card">Debit Card</option>
+                                                <option value="UPI">UPI</option>
+                                            </select>
+                                        </div>
+                                        <!-- <div class="col-12 mb-3">
+                                            <label class="form-label" for="cardNumber">Card Number</label>
+                                            <input type="text" class="form-control" id="cardNumber" placeholder="**** **** **** 1060">
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <label class="form-label" for="expiryDate">MM/YY</label>
+                                            <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY">
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <label class="form-label" for="cvvCode">CVV Code</label>
+                                            <input type="password" class="form-control" id="cvvCode" placeholder="CVV">
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label" for="cardName">Name on Card</label>
+                                            <input type="text" class="form-control" id="cardName" placeholder="Cardholder Name">
+                                        </div> -->
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary w-100">Confirm Payment</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+{% endblock %}

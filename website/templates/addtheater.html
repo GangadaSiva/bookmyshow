@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %} {% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+
+    <div class="mb-4">
+        <h2> Theaters</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr class="table-dark text-center">
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for theater in theaters %}
+                <tr class="table-secondary text-center">
+                    <td class="table-dark">{{ theater.id }}</td>
+                    <td>{{ theater.name }}</td>
+                    <td>{{ theater.location }}</td>
+                    <td>
+                        <button class="btn btn-danger m-1" onclick="deleteTheater({{ theater.id }})">Delete</button>
+                        <button class="btn btn-primary m-1" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#updateMovieModal"
+                                    onclick='updateTheater(
+                                        {{movie_id}},
+                                        {{ theater.id }}, 
+                                        {{ theater.name | tojson }}, 
+                                        {{ theater.location | tojson }},
+                                        {{ theater.total_screens}}   
+                                    )'>
+                                    Update
+                                </button>
+                        <a href="{{url_for('views.add_show', movie_id = movie_id, theater_id = theater.id)}}"><button class="btn btn-warning m-1">Shows Details</button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+    <h1 class="text-center">Add Theater</h1>
+    <form action="" method="POST" enctype="multipart/form-data">
+        <h2>Theater Details</h2>
+                <div class="form-group">
+                    <label for="theater_name">Theater Name</label>
+                    <input type="text" name="theater_name" class="form-control" id="theatre_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" name="location" class="form-control" id="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="total_screens">Number of Screens</label>
+                    <input type="number" name="total_screens" class="form-control" required>
+                    <p id="msg"></p>
+                </div>
+                <div class="text-center mt-2">
+                    <button type="submit" class="btn btn-primary">Submit Details</button>
+                </div>
+    </form>
+</div>
+
+
+
+
+<!-- Update theater Modal -->
+<div class="modal fade" id="updateMovieModal" tabindex="-1" aria-labelledby="updateMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/theater/update" method="POST" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateMovieModalLabel">Update Theater Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Hidden field to hold the movie ID -->
+                    <input type="hidden" name="theater_id" id="theater_id">
+                    <input type="hidden" name="cinema_id" id="cinema-id">   
+                     <div class="form-group">
+                        <label for="new_theater_name">Theater Name</label>
+                        <input type="text" name="new_theater_name" id="new-theater-name" class="form-control" required>
+                    </div>    
+                    <div class="form-group">
+                        <label for="new_location">Theater Location</label>
+                        <input type="text" name="new_location" id="new-location" class="form-control" required>
+                    </div>    
+                    <div class="form-group">
+                        <label for="new_total_screens">Number of Screens</label>
+                        <input type="number" name="new_total_screens" id="new-total-screens" class="form-control" required>
+                    </div>   
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    function checkTheater(theater_name,location){
+        let theater_msg = document.getElementById("msg")
+        if(theater_name === "" || location === ""){
+            theater_msg.innerHTML = "Please enter both theater name and location";
+            theater_msg.className = "text-danger";
+        }
+        else{
+            let xhr = new XMLHttpRequest()
+            xhr.open("POST", "{{url_for('views.checkTheater')}}", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+            xhr.onload = function(){
+                if(xhr.status === 200){
+                    let response = JSON.parse(xhr.responseText);
+                    theater_msg.innerHTML = response.message;
+                    if(response.exists){
+                        theater_msg.className = "text-danger";
+                    }else if(!response.exists){
+                        theater_msg.className = "text-success";
+                    }
+                }else{
+                    console.error(`Error: {xhr.status}`);
+                }
+            }
+            xhr.send(JSON.stringify({theater_name: theater_name, location :location}));
+
+        }
+    }
+
+
+
+
+
+    document.getElementById('theatre_name').addEventListener('input',()=>{
+        let theater_name = document.getElementById("theatre_name").value;
+        let location = document.getElementById("location").value;
+        checkTheater(theater_name,location);
+    });
+
+    document.getElementById('location').addEventListener('input',()=>{
+        let theater_name = document.getElementById("theatre_name").value;
+        let location = document.getElementById("location").value;
+        checkTheater(theater_name,location);
+    })
+
+</script>
+
+
+
+
+
+{% endblock %}

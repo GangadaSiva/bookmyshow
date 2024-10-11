@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Add seats{% endblock %}
+
+{% block content %}
+
+<div class="p-3">
+
+    <div class="mb-4">
+        <h2> Seats</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr class="table-dark text-center">
+                    <th scope="col">ID</th>
+                    <th scope="col">Row</th>
+                    <th scope="col">Seat Number</th>
+                    <th scope="col">Available</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for seat in seats %}
+                <tr class="table-secondary text-center">
+                    <td class="table-dark">{{ seat.id }}</td>
+                    <td>{{ seat.row }}</td>
+                    <td>{{ seat.seat_number }}</td>
+                    <td>{{ seat.is_available }}</td>
+                    <td>
+                        <button class="btn btn-danger m-1" onclick="deleteSeat({{seat.id}})">Delete</button>
+                        <button class="btn btn-primary m-1" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#updateMovieModal"
+                                    onclick='updateSeat(
+                                        {{seat.id}},
+                                        {{seat.seat_number}} 
+                                        
+                                        
+                                    )'>
+                                    Update
+                        </button>    
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+
+
+
+
+
+
+    <h4>Add Seats for show_id : {{screening_id}}</h4>
+    <form method="POST" action="{{url_for('views.add_seats')}}" enctype="multipart/form-data">
+        <!-- Hidden Screening ID Field -->
+        <input type="hidden" name="screening_id" value="{{ screening_id }}">
+    
+        <div class="form-group">
+            <label for="row">Row</label>
+            <select class="form-control" id="row" name="row">
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="seat_number">Seat Number</label>
+            <input type="number" class="form-control" id="seat_number" name="seat_number" required>
+        </div>
+        <div class="form-group">
+            <label for="is_available">Is Available</label>
+            <select class="form-control" id="is_available" name="is_available">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Add Seat</button>
+    </form>
+</div>
+
+
+
+
+
+<!-- Update Seat Modal -->
+<div class="modal fade" id="updateMovieModal" tabindex="-1" aria-labelledby="updateMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/seat/update" method="POST" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateMovieModalLabel">Update Seat Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Hidden field to hold the movie ID -->
+                    <input type="hidden" name="seat_id" id="seat-id">
+                    <input type="hidden" name="screening_id" id="screening-id" value="{{screening_id}}">  
+                    <div class="form-group">
+                        <label for="row">Row</label>
+                        <select class="form-control" id="row" name="new_row" disabled>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                    </div>    
+                    <div class="form-group">
+                        <label for="seat_number">Seat Number</label>
+                        <input type="number" class="form-control" id="new_seat_number" name="new_seat_number" required disabled>
+                    </div>    
+                    <div class="form-group">
+                        <label for="is_available">Is Available</label>
+                        <select class="form-control" id="new_is_available" name="new_is_available">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>  
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

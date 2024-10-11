@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Show seats{% endblock %}
+
+{% block content %}
+
+<form method="POST" action="{{ url_for('views.payment') }}" enctype="multipart/form-data" class="p-3">
+    <h3 class="text-danger">Select Seats for Screening: {{ screening.movie.title }}</h3>
+    <h4>Price: {{screening.price}}</h4>
+    <div class="d-flex justify-content-start flex-wrap">
+        {% for seat in seats %}
+            <label class="m-4">
+                <input type="checkbox" name="selected_seats" value="{{ seat.id }}">
+                {{ seat.row }} {{ seat.seat_number }}
+            </label><br>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+    <input type="hidden" name="screening_id" value="{{ screening.id }}">
+    <input type="hidden" name="price" value="{{ screening.price }}">
+</form>
+
+
+{% endblock %}

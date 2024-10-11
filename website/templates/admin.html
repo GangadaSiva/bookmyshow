@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %} Admin Dashboard {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center">Admin Dashboard</h1>
+
+
+    <!-- View Movies Section -->
+    <div class="mb-4">
+        <h2>Current Movies</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr class="table-dark text-center">
+                    <th scope="col">ID</th>
+                    <th scope="col" class="w-25">Title</th>
+                    <th scope="col">Genre</th>
+                    <th scope="col">Poster</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movie in movies %}
+                <tr class="table-secondary text-center">
+                    <td class="table-dark">{{ movie.id }}</td>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.genre }}</td>
+                    <td><img src="{{url_for('static' , filename = 'uploads/'+movie.image)}}" alt="{{movie.title}}" class="w-25 h-25"></td>
+                    <td>
+                        <button class="btn btn-danger m-1" onclick="deleteMovie({{ movie.id }})">Delete</button>
+                        <button class="btn btn-primary m-1" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#updateMovieModal" 
+                                    onclick='updateMovie(
+                                        {{ movie.id }}, 
+                                        {{ movie.title | tojson }}, 
+                                        {{ movie.description | tojson }}, 
+                                        {{ movie.duration }}, 
+                                        {{ movie.language | tojson }}, 
+                                        {{ movie.release_date.strftime('%Y-%m-%d') | tojson }}, 
+                                        {{ movie.genre | tojson }}
+                                        
+                                    )'>
+                                    Update/View
+                                </button>
+                        <a href="{{url_for('views.add_theater', movie_id = movie.id)}} "><button class="btn btn-warning m-1">Theater Details</button></a>
+                        <a href="{{url_for('views.all_reviews', movie_id = movie.id)}}"><button class="btn btn-info m-1">Reviews</button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Add Movie</h1>
+    
+        <!-- Combined Form for Movie, Theater, and Showtime -->
+        <form action="/admin/add" method="POST" enctype="multipart/form-data" id="addmovie">
+            
+            <!-- Movie Section -->
+            <div class="mb-4">
+                <h2>Movie Details</h2>
+                <div class="form-group">
+                    <label for="title">Movie Title</label>
+                    <input type="text" name="title" class="form-control" oninput="checkMovie(this.value)" required/>
+                    <p id="movie-message"></p>
+                </div>
+                <div class="form-group">
+                    <label for="genre">Genre</label>
+                    <input type="text" name="genre" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="duration">Duration (in minutes)</label>
+                    <input type="number" name="duration" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="release_date">Release Date</label>
+                    <input type="date" name="release_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="language">Language</label>
+                    <input type="text" name="language" class="form-control" required>
+                </div>
+              
+                <div class="form-group">
+                    <label for="poster">Upload Poster</label>
+                    <input type="file" name="poster" class="form-control" required>
+                </div>
+            </div>        
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit Details</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Update Movie Modal -->
+<div class="modal fade" id="updateMovieModal" tabindex="-1" aria-labelledby="updateMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/admin/movies/update/" method="POST" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateMovieModalLabel">Update Movie Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Hidden field to hold the movie ID -->
+                    <input type="hidden" name="movie_id" id="movie-id">
+                    <input type="hidden" name="cinema_id" id="cinema-id">
+                    <input type="hidden" name="screening_id" id="screening-id">
+                    
+                    <!-- Movie Title -->
+                    <div class="form-group">
+                        <label for="new_title">Movie Title</label>
+                        <input type="text" name="new_title" id="new-title" class="form-control" required>
+                    </div>
+                    <!-- Genre -->
+                    <div class="form-group">
+                        <label for="new_genre">Genre</label>
+                        <input type="text" name="new_genre" id="new-genre" class="form-control" required>
+                    </div>
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="new_description">Description</label>
+                        <textarea name="new_description" id="new-description" class="form-control" required></textarea>
+                    </div>
+                    <!-- Duration -->
+                    <div class="form-group">
+                        <label for="new_duration">Duration (in minutes)</label>
+                        <input type="number" name="new_duration" id="new-duration" class="form-control" required>
+                    </div>
+                    <!-- Release Date -->
+                    <div class="form-group">
+                        <label for="new_release_date">Release Date</label>
+                        <input type="date" name="new_release_date" id="new-release-date" class="form-control" required>
+                    </div>
+                    <!-- Language -->
+                    <div class="form-group">
+                        <label for="new_language">Language</label>
+                        <input type="text" name="new_language" id="new-language" class="form-control" required>
+                    </div>
+                    <!-- Poster Upload -->
+                    <div class="form-group">
+                        <label for="new_poster">Upload New Poster</label>
+                        <input type="file" name="new_poster" id="new-poster" class="form-control">
+                    </div>
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    let movie_exists = false;
+    function checkMovie(title){
+        if(title === ""){
+            let title_msg = document.getElementById("movie-message");
+            title_msg.innerHTML = "Please enter movie title"
+            title_msg.className = "text-danger";
+        }
+        else{
+            let xhr = new XMLHttpRequest()
+            xhr.open("POST","{{url_for('views.check_movie')}}", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+            xhr.onload = function(){
+                let title_msg = document.getElementById("movie-message");
+                if(xhr.status === 200){
+                    let response = JSON.parse(xhr.responseText)
+                    title_msg.innerHTML = response.message
+
+                    if(response.exists){
+                        title_msg.className = "text-danger"
+                        movie_exists = true
+                    }
+                    else if(!response.exists){
+                        title_msg.className = "text-success"
+                        movie_exists = false
+                    }
+                    else{
+                        title_msg.className = "text-success"
+                    }
+                }else{
+                    console.error(`Error: ${xhr.status}`);
+                }
+            }
+            xhr.send(JSON.stringify({title : title}));
+        }
+    }
+    document.getElementById("addmovie").addEventListener("submit", (event)=>{
+            if(movie_exists){
+                event.preventDefault();
+                alert("movie already exist");
+                
+            }
+        })
+</script>
+
+
+
+
+
+{% endblock %}

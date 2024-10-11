@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint, render_template,request,flash,redirect, url_for, jsonify, session
 from werkzeug.security import check_password_hash, generate_password_hash
-from .models import User
+from .models import User, Movie
 from . import db
 from . import mail
 from flask_mail import Message
@@ -9,40 +9,19 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 auth = Blueprint('auth', __name__)
 
-
+#Generate otp
 def generate_otp():
     otp = random.randint(100000, 999999)
     return str(otp)
+
+#send otp
 def send_otp(recipient_email, otp):
     msg = Message('Your otp code', recipients=[recipient_email])
     msg.body = f'use this otp {otp} to complete verification'
     mail.send(msg)
 
-@auth.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        email = request.form.get('email')
-        password = request.form.get('password')
-        user = User.query.filter_by(email = email).first()
 
-        if not user:
-            flash("Email does not exist!", category="alert-danger")
-            return redirect(url_for('auth.signUp'))
-        else:
-            if check_password_hash(user.password, password):
-                flash("Login Succesfull", category="alert-success")
-                login_user(user, remember=True)
-                return redirect(url_for('views.home'))
-            else:
-                flash("Password incorrect, try again!", category="alert-danger")
-    return render_template("login.html" ,user=current_user)
-
-@auth.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('auth.login'))
-
+#Check email availability
 @auth.route("/check-email", methods=["POST"])
 def checkemail():
     email_data = request.get_json()
@@ -58,7 +37,42 @@ def checkemail():
         return jsonify({"message":"email available", "exists": False}),200
 
 
+#login
+@auth.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = User.query.filter_by(email = email).first()
 
+        if not user:
+            flash("Email does not exist!", category="alert-danger")
+            return redirect(url_for('auth.signUp'))
+        else:
+            if check_password_hash(user.password, password):
+                flash("Login Succesfull", category="alert-success")
+                login_user(user, remember=True)
+                if user.is_admin:
+                    return redirect(url_for('views.add_movie'))
+                else:
+                    return redirect(url_for('views.home'))
+            else:
+                flash("Password incorrect, try again!", category="alert-danger")
+    movies = Movie.query.all()
+    return render_template("login.html" ,user=current_user, movies = movies)
+
+
+#logout
+@auth.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('auth.login'))
+
+
+
+
+#signup
 @auth.route("/signUp", methods=["GET", "POST"])
 def signUp():
     if request.method == "POST":
@@ -66,8 +80,10 @@ def signUp():
         name = request.form.get('name')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
-
+        is_admin = request.form.get('admin')
         user = User.query.filter_by(email = email).first()
+
+        is_admin = True if is_admin == 'True' else False
 
         if user:
             flash("Email already exist", category="alert-danger")
@@ -81,16 +97,20 @@ def signUp():
         else:
             otp = generate_otp()
             send_otp(email, otp)
+            session['email'] = email
             session['otp'] = otp
             session['user_data'] = {
                 'email' : email,
                 'name' : name,
-                'password': generate_password_hash(password1, method="pbkdf2:sha256")
+                'password': generate_password_hash(password1, method="pbkdf2:sha256"),
+                'is_admin' : is_admin
             }
             flash(f"OTP sent to {email}", category="alert-success")
             return redirect(url_for('auth.verifyOTP'))   
     return render_template("signup.html" ,user=current_user)
 
+
+#Verify Otp
 @auth.route("/verifyOTP", methods= ["GET","POST"])
 def verifyOTP():
     if request.method == "POST":
@@ -105,7 +125,7 @@ def verifyOTP():
             if user_otp == stored_otp:
                 user_data = session.get('user_data')
                 if user_data:
-                    new_user = User(email = user_data['email'], name= user_data['name'], password = user_data['password'])
+                    new_user = User(email = user_data['email'], name= user_data['name'], password = user_data['password'], is_admin = user_data['is_admin'])
                     db.session.add(new_user)
                     db.session.commit()
                     session.pop('otp', None)
@@ -114,6 +134,8 @@ def verifyOTP():
                     return redirect(url_for("auth.login"))
     return render_template("verifyOTP.html", user= current_user)
 
+
+# Resend Otp
 @auth.route("/resend_otp")
 def resend_otp():
     email = session.get('email') 

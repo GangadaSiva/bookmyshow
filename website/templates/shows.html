@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Shows screening{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="mb-4">
+        <h2> Shows</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr class="table-dark text-center">
+                    <th scope="col">ID</th>
+                    <th scope="col">Screen Number</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for show in shows %}
+                <tr class="table-secondary text-center">
+                    <td class="table-dark">{{ show.id }}</td>
+                    <td>{{ show.screen_number }}</td>
+                    <td>{{ show.start_time }}</td>
+                    <td>{{ show.price }}</td>
+                    <td>
+                        <button class="btn btn-danger m-1" onclick="deleteShow({{ show.id }})">Delete</button>
+                        <button class="btn btn-primary m-1" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#updateMovieModal"
+                                    onclick='updateShow(
+                                        {{movie_id}},
+                                        {{theater_id}},
+                                        {{ show.id }}, 
+                                        {{ show.screen_number }}, 
+                                        {{ show.start_time.strftime('%Y-%m-%dT%H:%M:%S') | tojson }},
+                                        {{ show.end_time.strftime('%Y-%m-%dT%H:%M:%S') | tojson }},
+                                        {{ show.price}}   
+                                    )'>
+                                    Update
+                                </button>
+                            <a href="{{url_for('views.seats', screening_id = show.id)}}"><button class="btn btn-warning m-1">Seats</button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <h1 class="text-center">Shows Details</h1>
+    <div class="container">
+        <form action="" method="POST" enctype="multipart/form-data">
+            <h2>Add Showtime Details</h2>
+                <div class="form-group">
+                    <label for="screen_number">Screen Number</label>
+                    <input type="number" name="screen_number" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="start_time">Show Start Time</label>
+                    <input type="datetime-local" name="start_time" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_time">Show End Time</label>
+                    <input type="datetime-local" name="end_time" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Ticket Price</label>
+                    <input type="number" name="price" class="form-control" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Submit Details</button>
+                </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+<!-- Update Movie Modal -->
+<div class="modal fade" id="updateMovieModal" tabindex="-1" aria-labelledby="updateMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/show_update" method="POST" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateMovieModalLabel">Update Show Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Hidden field to hold the movie ID -->
+                    <input type="hidden" name="movie_id" id="movie-id">
+                    <input type="hidden" name="theater_id" id="theater-id">
+                    <input type="hidden" name="screening_id" id="screening-id">
+                                    
+                    <div class="form-group">
+                        <label for="new_screen_number">Screen Number</label>
+                        <input type="number" name="new_screen_number" id="new-screen-number" class="form-control" required>
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label for="new_start_time">Show Start Time</label>
+                        <input type="datetime-local" name="new_start_time" id="new-start-time" class="form-control" required>
+                    </div>
+
+                   
+                    <div class="form-group">
+                        <label for="new_end_time">Show End Time</label>
+                        <input type="datetime-local" name="new_end_time" id="new-end-time" class="form-control" required>
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label for="new_price">Ticket Price</label>
+                        <input type="number" name="new_price" id="new-price" class="form-control" required>
+                    </div>
+                </div>  
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}
