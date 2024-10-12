@@ -388,6 +388,18 @@ def delete_reviews(movie_id, review_id):
     return redirect(url_for("views.all_reviews", movie_id= movie_id))
 
 
+@views.route("/users", methods=["POST", "GET"])
+def all_users():
+    users = User.query.all()
+    return render_template("users.html", user=current_user, users=users)
+
+@views.route("/delete/user/<int:user_id>", methods=["GET", "POST"])
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if current_user.is_admin:
+        db.session.delete(user)
+        db.session.commit()
+    return redirect(url_for("views.all_users"))
 
 
 

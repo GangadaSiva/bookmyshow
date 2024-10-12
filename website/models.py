@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(150))
     phone = db.Column(db.String(15), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
-    bookings = db.relationship('Booking', backref='user', lazy=True)
+    bookings = db.relationship('Booking', backref='user', lazy=True ,cascade="all, delete-orphan")
 
 
 class Movie(db.Model):
