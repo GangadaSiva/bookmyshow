@@ -15,16 +15,16 @@
     <i class="fa fa-circle text-danger" aria-hidden="true"></i> <span class="text-secondary">FAST FILLING</span>
     <hr>
 </div>
-{% for cinema in cinemas %}
+<!-- {% for cinema in cinemas %}
 <div class="row">
     <div class="col-lg-4">
         <h6>{{cinema.name}}: {{cinema.location}}</h6>
     </div>
     <div class="col-lg-8">
-        <div class="row cursor-pointer">
+        <div class="row cursor-pointer border">
             {% for screening in screenings %}
                 {% if screening.cinema_id == cinema.id %}
-                    <a href="{{url_for('views.show_seats', screening_id = screening.id)}}" class="col-lg-3 border text-center m-1 text-success bg-white rounded text-decoration-none">
+                    <a href="{{url_for('views.show_seats', screening_id = screening.id)}}" class="col-4 col-sm-3 col-md-3 col-lg-3 border text-center m-1 text-success bg-white rounded text-decoration-none">
                         <p class="mb-0 " style="cursor: pointer;">{{screening.start_time}}</p>
                         <p class="mt-0 mb-0" style="cursor: pointer;">Screen {{screening.screen_number}}</p>
                     </a>
@@ -34,7 +34,36 @@
     </div>
 </div>
 <hr>
+{% endfor %} -->
+
+{% for cinema in cinemas %}
+<div class="row mb-3">
+    <!-- Cinema Name and Location -->
+    <div class="col-12 col-lg-4">
+        <h6>{{cinema.name}}: {{cinema.location}}</h6>
+    </div>
+    
+    <!-- Screenings -->
+    <div class="col-12 col-lg-8">
+        <div class="row d-flex flex-wrap cursor-pointer ">
+            {% for screening in screenings %}
+                {% if screening.cinema_id == cinema.id %}
+                    <!-- Screening Card -->
+                    <a href="{{url_for('views.show_seats', screening_id = screening.id)}}"
+                       class="col-11 col-sm-6 col-md-4 col-lg-3 border text-center m-1 text-success bg-white rounded text-decoration-none">
+                        <p class="mb-0" style="cursor: pointer;">{{screening.start_time}}</p>
+                        <p class="mt-0 mb-0" style="cursor: pointer;">Screen {{screening.screen_number}}</p>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<hr>
 {% endfor %}
+
+
+
 
 
 

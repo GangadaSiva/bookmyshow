@@ -6,9 +6,9 @@
 {% block content %}
 
 <div class="container">
-
-    <div class="mb-4">
-        <h2> Theaters</h2>
+    <h2> Theaters</h2>
+    <div class="mb-4 overflow-auto">
+        
         <table class="table table-striped">
             <thead>
                 <tr class="table-dark text-center">
@@ -25,8 +25,9 @@
                     <td>{{ theater.name }}</td>
                     <td>{{ theater.location }}</td>
                     <td>
-                        <button class="btn btn-danger m-1" onclick="deleteTheater({{ theater.id }})">Delete</button>
-                        <button class="btn btn-primary m-1" 
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-danger m-1 btn-sm h-75" onclick="deleteTheater({{ theater.id }})">Delete</button>
+                            <button class="btn btn-primary m-1 btn-sm h-75" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#updateMovieModal"
                                     onclick='updateTheater(
@@ -38,7 +39,8 @@
                                     )'>
                                     Update
                                 </button>
-                        <a href="{{url_for('views.add_show', movie_id = movie_id, theater_id = theater.id)}}"><button class="btn btn-warning m-1">Shows Details</button></a>
+                        <a href="{{url_for('views.add_show', movie_id = movie_id, theater_id = theater.id)}}"><button class="btn btn-warning m-1 btn-sm h-75">Shows</button></a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

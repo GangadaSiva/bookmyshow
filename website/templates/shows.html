@@ -6,7 +6,7 @@
 
 <div class="container">
 
-    <div class="mb-4">
+    <div class="mb-4 overflow-auto">
         <h2> Shows</h2>
         <table class="table table-striped">
             <thead>
@@ -26,7 +26,8 @@
                     <td>{{ show.start_time }}</td>
                     <td>{{ show.price }}</td>
                     <td>
-                        <button class="btn btn-danger m-1" onclick="deleteShow({{ show.id }})">Delete</button>
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-danger m-1" onclick="deleteShow({{ show.id }})">Delete</button>
                         <button class="btn btn-primary m-1" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#updateMovieModal"
@@ -42,6 +43,7 @@
                                     Update
                                 </button>
                             <a href="{{url_for('views.seats', screening_id = show.id)}}"><button class="btn btn-warning m-1">Seats</button></a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

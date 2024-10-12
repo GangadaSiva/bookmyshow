@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div class="row">
+<!-- <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6 mt-5">
         <div class="bg-white p-5 rounded-3 shadow-sm border" style="height: 400px;">
@@ -33,6 +33,60 @@
                             <input class="form-control otp-letter-input" type="text" name="otp5" maxlength="1" required oninput="moveFocus(this, 'otp6')">
                         </div>
                         <div class="col-2">
+                            <input class="form-control otp-letter-input" type="text" name="otp6" maxlength="1" required oninput="moveFocus(this, null)">
+                        </div>
+                    </div>
+                    
+                    <p class="text-muted text-center">
+                        Didn't get the code? 
+                        <a href="{{ url_for('auth.resend_otp') }}" class="text-success">Click to resend.</a>
+                    </p>
+
+                    <div class="row pt-5">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="window.location.href='/signUp';">Cancel</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-success w-100">Verify</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->
+
+
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 mt-5">
+        <div class="bg-white p-1 rounded-3 shadow-sm border" style="height: 400px;">
+            <form action="" method="POST">
+                <div>
+                    <p class="text-center text-success" style="font-size: 5.5rem;">
+                        <i class="fa-solid fa-envelope-circle-check"></i>
+                    </p>
+                    <p class="text-center h5">Please check your email</p>
+                    
+                    <p class="text-muted text-center">We've sent a code to your email.</p>
+
+                    <div class="row p-0 justify-content-center">
+                        <div class="col-2 col-sm-2 col-md-2">
+                            <input class="form-control otp-letter-input" type="text" name="otp1" maxlength="1" required oninput="moveFocus(this, 'otp2')">
+                        </div>
+                        <div class="col-2 col-sm-2 col-md-2">
+                            <input class="form-control otp-letter-input" type="text" name="otp2" maxlength="1" required oninput="moveFocus(this, 'otp3')">
+                        </div>
+                        <div class="col-2 col-sm-2 col-md-2">
+                            <input class="form-control otp-letter-input" type="text" name="otp3" maxlength="1" required oninput="moveFocus(this, 'otp4')">
+                        </div>
+                        <div class="col-2 col-sm-2 col-md-2">
+                            <input class="form-control otp-letter-input" type="text" name="otp4" maxlength="1" required oninput="moveFocus(this, 'otp5')">
+                        </div>
+                        <div class="col-2 col-sm-2 col-md-2">
+                            <input class="form-control otp-letter-input" type="text" name="otp5" maxlength="1" required oninput="moveFocus(this, 'otp6')">
+                        </div>
+                        <div class="col-2 col-sm-2 col-md-2">
                             <input class="form-control otp-letter-input" type="text" name="otp6" maxlength="1" required oninput="moveFocus(this, null)">
                         </div>
                     </div>

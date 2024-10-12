@@ -4,13 +4,14 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="text-center">Admin Dashboard</h1>
+    <h1 class="text-center fw-bold">Admin Dashboard</h1>
 
 
     <!-- View Movies Section -->
-    <div class="mb-4">
-        <h2>Current Movies</h2>
-        <table class="table table-striped">
+    <h2>Current Movies</h2>
+    <div class="mb-4 overflow-auto">
+        
+        <table class="table table-striped overflow-auto">
             <thead>
                 <tr class="table-dark text-center">
                     <th scope="col">ID</th>
@@ -26,10 +27,12 @@
                     <td class="table-dark">{{ movie.id }}</td>
                     <td>{{ movie.title }}</td>
                     <td>{{ movie.genre }}</td>
-                    <td><img src="{{url_for('static' , filename = 'uploads/'+movie.image)}}" alt="{{movie.title}}" class="w-25 h-25"></td>
+                    <td><img src="{{url_for('static' , filename = 'uploads/'+movie.image)}}" alt="{{movie.title}}" class="w-50 h-25 img-fluid"></td>
                     <td>
-                        <button class="btn btn-danger m-1" onclick="deleteMovie({{ movie.id }})">Delete</button>
-                        <button class="btn btn-primary m-1" 
+                        <!-- <button class="btn btn-danger m-1" onclick="deleteMovie({{ movie.id }})">Delete</button> -->
+                        <div class="d-flex justify-content-center align-items-center">
+                            <a href="{{url_for('views.deleteMovie', movie_id = movie.id)}}"><i class="fa fa-trash me-2 fs-3 text-danger  delete-icon" aria-hidden="true"></i></a>
+                            <button class="btn btn-primary m-1 btn-sm" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#updateMovieModal" 
                                     onclick='updateMovie(
@@ -42,10 +45,11 @@
                                         {{ movie.genre | tojson }}
                                         
                                     )'>
-                                    Update/View
+                                    Update
                                 </button>
-                        <a href="{{url_for('views.add_theater', movie_id = movie.id)}} "><button class="btn btn-warning m-1">Theater Details</button></a>
-                        <a href="{{url_for('views.all_reviews', movie_id = movie.id)}}"><button class="btn btn-info m-1">Reviews</button></a>
+                            <a href="{{url_for('views.add_theater', movie_id = movie.id)}} "><button class="btn btn-warning m-1 btn-sm">Theaters</button></a>
+                            <a href="{{url_for('views.all_reviews', movie_id = movie.id)}}"><button class="btn btn-info m-1 btn-sm">Reviews</button></a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -57,7 +61,7 @@
         <h1 class="text-center">Add Movie</h1>
     
         <!-- Combined Form for Movie, Theater, and Showtime -->
-        <form action="/admin/add" method="POST" enctype="multipart/form-data" id="addmovie">
+        <form action="/admin/add" method="POST" enctype="multipart/form-data" id="addmovie" class="pb-3">
             
             <!-- Movie Section -->
             <div class="mb-4">
@@ -93,7 +97,7 @@
                     <input type="file" name="poster" class="form-control" required>
                 </div>
             </div>        
-            <div class="text-center">
+            <div class="text-center form-group">
                 <button type="submit" class="btn btn-primary">Submit Details</button>
             </div>
         </form>

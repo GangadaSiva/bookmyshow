@@ -242,21 +242,26 @@ def show_update():
 
 
 
-@views.route("/admin/movies/delete/", methods=["POST"])
+@views.route("/admin/movies/delete/", methods=["GET","POST"])
 @login_required
 def deleteMovie():
-    movie_data = request.get_json()
-    movie_id = movie_data.get('movie_id')
+    movie_id = request.args.get('movie_id')
+    movie = Movie.query.get(movie_id)
+    db.session.delete(movie)
+    db.session.commit()
+    return redirect(url_for('views.add_movie'))
+    # movie_data = request.get_json()
+    # movie_id = movie_data.get('movie_id')
 
-    if movie_id:
-        movie = Movie.query.get(movie_id)
-        if movie:
-            # Delete the movie and cascade to delete associated screenings and cinemas
-            db.session.delete(movie)
-            db.session.commit()
-            return jsonify({}), 200
-        return jsonify({"error": "Movie not found"}), 404
-    return jsonify({"error": "Invalid request"}), 404
+    # if movie_id:
+    #     movie = Movie.query.get(movie_id)
+    #     if movie:
+    #         # Delete the movie and cascade to delete associated screenings and cinemas
+    #         db.session.delete(movie)
+    #         db.session.commit()
+    #         return jsonify({}), 200
+    #     return jsonify({"error": "Movie not found"}), 404
+    # return jsonify({"error": "Invalid request"}), 404
 
 
 @views.route("/delete_theater", methods=["POST"])
@@ -339,7 +344,7 @@ def add_seats():
         row = request.form.get('row')
         seat_number = request.form.get('seat_number')
         is_available = True if request.form.get('is_available') == 'true' else False
-        seat = Seat.query.filter_by(row = row, seat_number = seat_number).first()
+        seat = Seat.query.filter_by(row = row, seat_number = seat_number, screening_id= screening_id).first()
 
         if not seat:
             seat = Seat(screening_id = screening_id, row = row, seat_number = seat_number, is_available= is_available)
@@ -446,10 +451,14 @@ def payment():
     screening_id = request.form.get('screening_id')
     price = request.form.get('price')
 
-    total_price = len(selected_seats) * float(price)
-    string_calculation = str(len(selected_seats)) + " X " + str(price)
-    screening = Screening.query.get(screening_id)
-    return render_template('payment.html',user=current_user, total_price = total_price, screening=screening, selected_seats=selected_seats, string_calculation = string_calculation)
+    if not selected_seats:
+        flash("Please select seats to proceed", category="alert-danger")
+        return redirect(url_for('views.show_seats', screening_id= screening_id))
+    else:
+        total_price = len(selected_seats) * float(price)
+        string_calculation = str(len(selected_seats)) + " X " + str(price)
+        screening = Screening.query.get(screening_id)
+        return render_template('payment.html',user=current_user, total_price = total_price, screening=screening, selected_seats=selected_seats, string_calculation = string_calculation)
 
 @views.route('/process_payment', methods=["GET", "POST"])
 @login_required
@@ -478,7 +487,8 @@ def process_payment():
         db.session.add(payment)
     db.session.commit()
     flash('Payment Successful! Your seats have been booked.', category='alert-success')
-    return redirect(url_for("views.home"))
+    return render_template("success.html", user=current_user)
+    # return redirect(url_for("views.home"))
 
 
 @views.route('/user/bookings', methods = ["POST", "GET"])

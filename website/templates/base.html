@@ -1,13 +1,13 @@
 <html>
     <head>
         <title>{% block title %}Base page{% endblock %}</title>
-        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{url_for('static', filename= 'bootstrap.min.css')}}">
         <link rel="stylesheet" href="{{ url_for('static', filename= 'index.css') }}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg">
+        <!-- <nav class="navbar navbar-expand-lg">
             <button class="navbar-toggler ms-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -36,6 +36,54 @@
                             Welcome {{user.name}}<i class="fa fa-user ms-2" aria-hidden="true"></i>
                         </a>
                     {% endif %}
+                </div>
+            </div>
+        </nav> -->
+
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <img src="https://getlogo.net/wp-content/uploads/2020/04/bookmyshow-logo-vector.png" alt="Logo" width="90" height="44" class="d-inline-block align-text-top">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="navbar-nav me-auto">
+                        {% if user.is_authenticated %}
+                            {% if user.is_admin %}
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" href="/admin/add">Home<i class="fa fa-home ms-2" aria-hidden="true"></i></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" href="/logout">Logout<i class="fa fa-sign-out ms-2" aria-hidden="true"></i></a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" href="/">Home<i class="fa fa-home ms-2" aria-hidden="true"></i></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" href="/logout">Logout<i class="fa fa-sign-out ms-2" aria-hidden="true"></i></a>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link text-danger fw-bold" href="/login">Login<i class="fa fa-sign-in ms-2" aria-hidden="true"></i></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-danger fw-bold" href="/signUp">Sign Up<i class="fa fa-user-plus ms-2" aria-hidden="true"></i></a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold text-danger" href="{{url_for('views.user_bookings')}}">
+                                    Welcome {{user.name}}<i class="fa fa-user ms-2" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
         </nav>
