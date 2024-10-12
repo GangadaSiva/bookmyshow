@@ -6,6 +6,7 @@ from . import db
 import os
 from datetime import datetime
 from sqlalchemy import func
+import time
 views = Blueprint('views', __name__)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg','jpeg', 'gif'}
@@ -498,9 +499,10 @@ def process_payment():
         payment = Payment(booking_id= booking_id, amount= total_price, payment_method= payment_method,status="Paid")
         db.session.add(payment)
     db.session.commit()
+    time.sleep(2)
     flash('Payment Successful! Your seats have been booked.', category='alert-success')
-    return render_template("success.html", user=current_user)
-    # return redirect(url_for("views.home"))
+    # return render_template("success.html", user=current_user)
+    return redirect(url_for("views.user_bookings"))
 
 
 @views.route('/user/bookings', methods = ["POST", "GET"])
